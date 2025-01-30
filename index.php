@@ -1,103 +1,141 @@
 <?php
-include 'initialize.php';
-
+// Read the variables sent via POST from our API
 $sessionId   = $_POST["sessionId"];
 $serviceCode = $_POST["serviceCode"];
 $phoneNumber = $_POST["phoneNumber"];
 $text        = $_POST["text"];
 
 
-// Handle different menu levels based on user input
+// Split the text input by "*"
+$inputs = explode("*", $text);
+
+// Determine the flow based on the number of inputs
 if ($text == "") {
-    // First level - Sugar preference
-    $response = "CON Welcome to Tea Order Service\n";
-    $response .= "Select Sugar Option:\n";
-    $response .= "1. Sugared Tea\n";
-    $response .= "2. Sugarless Tea";
-}
+    // Initial menu
+    $response  = "CON Welcome to the Jay's Uji Power!\n";
+    $response .= "1. Order Uji Power\n";
+    $response .= "2. Exit";
 
-// First level responses
-else if ($text == "1" || $text == "2") {
-    // Show flavor menu
-    $response = "CON Select Tea Flavor (100 Ksh each):\n";
-    $response .= "1. Flavor A\n";
-    $response .= "2. Flavor B\n";
-    $response .= "3. Flavor C\n";
-    $response .= "4. Flavor D\n";
-    $response .= "5. Flavor E";
-}
+} else if ($inputs[0] == "1" && count($inputs) == 1) {
+    // Tea type selection
+    $response  = "CON Choose tea type:\n";
+    $response .= "1. With Sugar\n";
+    $response .= "2. Sugarless";
 
-// Second level responses (Sugar*Flavor)
-else if (preg_match('/^[1-2]\*[1-5]$/', $text)) {
-    // Ask for quantity
-    $response = "CON Enter number of cups:";
-}
+} else if ($inputs[0] == "1" && count($inputs) == 2) {
+    // Flavor selection
+    $response  = "CON Choose flavor:\n";
+    $response .= "1. Flavored\n";
+    $response .= "2. Unflavored";
 
-// Third level responses (Sugar*Flavor*Quantity)
-else if (preg_match('/^[1-2]\*[1-5]\*[0-9]+$/', $text)) {
-    // Ask for building location
-    $response = "CON Enter building name/location:";
-}
+} else if ($inputs[0] == "1" && count($inputs) == 3 && $inputs[2] == "1") {
+    // Specific flavor type selection (if "Flavored" was chosen)
+    $response  = "CON Choose flavor type (Sh 100 Each):\n";
+    $response .= "1. Honey \n";
+    $response .= "2. Moringa\n";
+    $response .= "3. Mukombero\n";
+    $response .= "4. Thafai\n";
+    $response .= "5. Special";
 
-// Fourth level responses (Sugar*Flavor*Quantity*Building)
-else if (preg_match('/^[1-2]\*[1-5]\*[0-9]+\*[a-zA-Z0-9 ]+$/', $text)) {
-    // Ask for office
-    $response = "CON Enter office name/number:";
-}
+} else if ($inputs[0] == "1" && ((count($inputs) == 3 && $inputs[2] == "2") || count($inputs) == 4)) {
+    // Quantity input
+    $response  = "CON Enter quantity (How many cups ?)";
 
-// Fifth level responses (Sugar*Flavor*Quantity*Building*Office)
-else if (preg_match('/^[1-2]\*[1-5]\*[0-9]+\*[a-zA-Z0-9 ]+\*[a-zA-Z0-9 ]+$/', $text)) {
-    // Show delivery time options
-    $response = "CON Select delivery time:\n";
+} else if ($inputs[0] == "1" && count($inputs) == 5) {
+    // Location (building) input
+    $response  = "CON Enter your location (building):";
+
+} else if ($inputs[0] == "1" && count($inputs) == 6) {
+    // Office name or number input
+    $response  = "CON Enter your office name or number:\n";
+    $response .= "Enter none if theres no office."; 
+
+} else if ($inputs[0] == "1" && count($inputs) == 7) {
+    // Delivery time selection
+    $response  = "CON Choose delivery time:\n";
     $response .= "1. 5-7am\n";
     $response .= "2. 9-11am\n";
-    $response .= "3. 1-3pm\n";
-    $response .= "4. 5-7pm";
-}
+    $response .= "3. 12-2pm\n";
+    $response .= "4. 3-5pm";
 
-// Sixth level responses (Sugar*Flavor*Quantity*Building*Office*Time)
-else if (preg_match('/^[1-2]\*[1-5]\*[0-9]+\*[a-zA-Z0-9 ]+\*[a-zA-Z0-9 ]+\*[1-4]$/', $text)) {
-    // Parse all input
-    $parts = explode('*', $text);
-    $sugar = ($parts[0] == '1') ? 'Sugared' : 'Sugarless';
-    $flavor = chr(64 + intval($parts[1])); // Convert 1,2,3,4,5 to A,B,C,D,E
-    $quantity = $parts[2];
-    $building = $parts[3];
-    $office = $parts[4];
-    $time = [
-        '1' => '5-7am',
-        '2' => '9-11am',
-        '3' => '1-3pm',
-        '4' => '5-7pm'
-    ][$parts[5]];
+} else if ($inputs[0] == "1" && count($inputs) == 8) {
+    // Final confirmation
+    $teaType = $inputs[1] == "1" ? "Sugared" : "Sugarless";
+    $flavor = $inputs[2] == "1" ? "Flavored" : "Unflavored";
+    $flavourOptions = ["Honey", "Moringa", "Mukombero", "Thafai", "Special"];
     
-    $total = $quantity * 100; // 100 Ksh per cup
+    if ($inputs[3] == "2") {
+        $flavorType = "None";
+    } else
+        $flavorType = $flavourOptions[$inputs[2] -1 ];
+
+    $quantity = (int)$inputs[4];
+    $building = $inputs[5];
+    $office = $inputs[6];
+    $timeOptions = ["5-7am", "9-11am", "12-2pm", "3-5pm"];
+    $time = $timeOptions[$inputs[7] - 1];
+    $price = $quantity * 100;
+
+    $response = "CON Confirm your order:\n";
+    $response .= "Uji: $teaType\n";
+    $response .= "Flavor: $flavorType\n";
+    $response .= "Quantity: $quantity\n";
+    $response .= "Building: $building, Office: $office\n";
+    $response .= "Delivery Time: $time\n";
+    $response .= "Total Price: $price Ksh\n";
+    $response .= "1. Pay\n";
+    $response .= "2. Cancel/Change Order";
+
+} else if ($inputs[0] == "1" && count($inputs) == 9 && $inputs[8] == "1") {
+    // Payment step
     
-    // Show order summary and payment options
-    $response = "CON Order Summary:\n";
-    $response .= "$sugar Tea Flavor $flavor\n";
-    $response .= "Quantity: $quantity cups\n";
-    $response .= "Location: $building, Office: $office\n";
-    $response .= "Delivery: $time\n";
-    $response .= "Total: $total Ksh\n\n";
-    $response .= "1. Confirm & Pay\n";
-    $response .= "2. Cancel Order";
-}
+    $quantity = (int)$inputs[4];
+    $price = $quantity * 100;
+    $amount = $price;
+    include './functions/configs.php'; 
+    
+    
+    $url = "https://api.paystack.co/transaction/initialize";
 
-// Seventh level responses (Sugar*Flavor*Quantity*Building*Office*Time*Choice)
-else if (preg_match('/^[1-2]\*[1-5]\*[0-9]+\*[a-zA-Z0-9 ]+\*[a-zA-Z0-9 ]+\*[1-4]\*1$/', $text)) {
-    echo "<script>payWithPaystack()</script>";
-}
+    $fields = [
+        'email' => "imanindolo77@gmail.com",
+        'amount' => $amount,
+        'phoneNumber' => $phoneNumber,
+        'currency' => "KES"
+        
+    ];
 
-else if (preg_match('/^[1-2]\*[1-5]\*[0-9]+\*[a-zA-Z0-9 ]+\*[a-zA-Z0-9 ]+\*[1-4]\*2$/', $text)) {
-    // If user cancelled (chose 2)
-    $response = "END Order cancelled. Thank you for using our service!";
-}
+    $fields_string = http_build_query($fields);
 
+    //open connection
+    $ch = curl_init();
+    
+    //set the url, number of POST vars, POST data
+    curl_setopt($ch,CURLOPT_URL, $url);
+    curl_setopt($ch,CURLOPT_POST, true);
+    curl_setopt($ch,CURLOPT_POSTFIELDS, $fields_string);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+        "Authorization: Bearer $SecretKey",
+        "Cache-Control: no-cache",
+    ));
+    
+    //So that curl_exec returns the contents of the cURL; rather than echoing it
+    curl_setopt($ch,CURLOPT_RETURNTRANSFER, true); 
+    
+    //execute post
+    $result = curl_exec($ch);
+    echo $result;
     
 
 
 
-   
 
+} else {
+    // Invalid input
+    $response = "CON Invalid selection. Try again.";
+}
+
+// Return the response to the API
+header('Content-type: text/plain');
+echo $response
 ?>
