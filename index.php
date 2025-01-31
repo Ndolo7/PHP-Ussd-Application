@@ -1,4 +1,30 @@
 <?php
+// Enable error reporting for debugging
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
+// Log incoming requests
+$logMessage = date('Y-m-d H:i:s') . " - Received USSD callback\n";
+$logMessage .= "POST data: " . print_r($_POST, true) . "\n";
+error_log($logMessage, 3, "ussd_callback_log.txt");
+
+// Database connection
+try {
+    $servername = "localhost";
+    $username = "root";
+    $password = ""; 
+    $dbname = "ussds";
+    $db = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
+    $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+} catch (PDOException $e) {
+    error_log("Database connection failed: " . $e->getMessage());
+    http_response_code(500);
+    echo json_encode(['status' => 'error', 'message' => 'Database connection failed']);
+    exit;
+}
+
+
+
 // Read the variables sent via POST from our API
 $sessionId   = $_POST["sessionId"];
 $serviceCode = $_POST["serviceCode"];
@@ -86,13 +112,18 @@ if ($text == "") {
     $response .= "1. Pay\n";
     $response .= "2. Cancel/Change Order";
 
+    ;$stmt = $db->prepare("INSERT INTO orders (tea_type, flavor, quantity, building, office, delivery_time, phone_number, status) VALUES (?, ?, ?, ?, ?, ?, ?, 'pending')");
+    ;$stmt->execute([$teaType, $flavorType, $quantity, $building, $office, $time, $phoneNumber]);
+
+    $orderId = $db->lastInsertId();
+
 } else if ($inputs[0] == "1" && count($inputs) == 9 && $inputs[8] == "1") {
     // Payment step
     
     $quantity = (int)$inputs[4];
     $price = $quantity * 100;
     $amount = $price;
-    include './functions/configs.php'; 
+    include 'functions/configs.php'; 
     
     
     $url = "https://api.paystack.co/transaction/initialize";
