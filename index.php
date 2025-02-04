@@ -38,86 +38,86 @@ $inputs = explode("*", $text);
 // Determine the flow based on the number of inputs
 if ($text == "") {
     // Initial menu
-    $response  = "CON Welcome to the Jay's Uji Power!\n";
-    $response .= "1. Order Uji Power\n";
+    $response  = "CON Welcome to orders By Precious!\n";
+    $response .= "1. Uji Power\n";
     $response .= "2. Exit";
 
 } else if ($inputs[0] == "1" && count($inputs) == 1) {
     // Tea type selection
-    $response  = "CON Choose tea type:\n";
-    $response .= "1. With Sugar\n";
-    $response .= "2. Sugarless";
+    $response  = "CON Please select Uji Power with:\n";
+    $response .= "1. No Sugar\n";
+    $response .= "2. Sugar\n ";
+    $response .= "3. Extra Sugar\n ";
+    $response .= "4. Honey ";
 
 } else if ($inputs[0] == "1" && count($inputs) == 2) {
     // Flavor selection
-    $response  = "CON Choose flavor:\n";
-    $response .= "1. Flavored\n";
-    $response .= "2. Unflavored";
-
-} else if ($inputs[0] == "1" && count($inputs) == 3 && $inputs[2] == "1") {
-    // Specific flavor type selection (if "Flavored" was chosen)
-    $response  = "CON Choose flavor type (Sh 100 Each):\n";
-    $response .= "1. Honey \n";
+    $response  = "CON Please select your flavor at an additional cost of sh 10:\n";
+    $response .= "1. Mukombero\n";
     $response .= "2. Moringa\n";
-    $response .= "3. Mukombero\n";
-    $response .= "4. Thafai\n";
-    $response .= "5. Special";
+    $response .= "3. Thabai\n";
+    $response .= "4. Above mixture (Confimation after order)\n";
+    $response .= "5. No Flavor\n";
 
-} else if ($inputs[0] == "1" && ((count($inputs) == 3 && $inputs[2] == "2") || count($inputs) == 4)) {
-    // Quantity input
-    $response  = "CON Enter quantity (How many cups ?)";
+} else if ($inputs[0] == "1" && count($inputs) == 3) {
+    $response  = "CON Please provide your location (eg. Building, Office name, Shop)";
+    
 
-} else if ($inputs[0] == "1" && count($inputs) == 5) {
-    // Location (building) input
-    $response  = "CON Enter your location (building):";
-
-} else if ($inputs[0] == "1" && count($inputs) == 6) {
-    // Office name or number input
-    $response  = "CON Enter your office name or number:\n";
-    $response .= "Enter none if theres no office."; 
-
-} else if ($inputs[0] == "1" && count($inputs) == 7) {
+} else if ($inputs[0] == "1" && count($inputs) == 4) {
     // Delivery time selection
     $response  = "CON Choose delivery time:\n";
-    $response .= "1. 5-7am\n";
-    $response .= "2. 9-11am\n";
-    $response .= "3. 12-2pm\n";
-    $response .= "4. 3-5pm";
+    $response .= "1. 8:30am - 9:30am\n";
+    $response .= "2. 9:30am - 11:00am\n";
+    $response .= "3. 11:00am - 12:30pm\n";
+    $response .= "4. 3:00pm - 4:30pm\n";
+    $response .= "4. 6:00pm - 9:00pm";
 
-} else if ($inputs[0] == "1" && count($inputs) == 8) {
+
+} else if ($inputs[0] == "1" && count($inputs) == 5) {
     // Final confirmation
-    $teaType = $inputs[1] == "1" ? "Sugared" : "Sugarless";
-    $flavor = $inputs[2] == "1" ? "Flavored" : "Unflavored";
-    $flavourOptions = ["Honey", "Moringa", "Mukombero", "Thafai", "Special"];
-    
-    if ($inputs[3] == "2") {
-        $flavorType = "None";
-    } else
-        $flavorType = $flavourOptions[$inputs[2] -1 ];
+    $sugarOptions = ["No Sugar", "Sugar", "Extra Sugar", "Honey"];
+    $sugarType = $sugarOptions[$inputs[1] -1 ];
 
-    $quantity = (int)$inputs[4];
-    $building = $inputs[5];
-    $office = $inputs[6];
-    $timeOptions = ["5-7am", "9-11am", "12-2pm", "3-5pm"];
-    $time = $timeOptions[$inputs[7] - 1];
-    $price = $quantity * 100;
+    $flavourOptions = [ "Mukombero", "Moringa",  "Thabai", "Above mixture (Confimation after order)", "No Flavor"];
+    $flavorType = $flavourOptions[$inputs[2] -1 ];
+
+    $location = $inputs[3];
+    
+    $timeOptions = ["8:30am - 9:30am", "9:30am - 11:00am", "11:00am - 12:30pm", "3:00pm - 4:30pm", "6:00pm - 9:00pm"];
+    $time = $timeOptions[$inputs[4] - 1];
+
+    $price = 100;
+    // Sugar type pricing
+    if ($inputs[1] == "3") { // Extra Sugar
+        $price += 10;
+    } else if ($inputs[1] == "4") { // Honey
+        $price += 10;
+    }
+
+    // Flavor pricing
+    if ($inputs[2] == "1" || $inputs[2] == "2" || $inputs[2] == "3") { // Single flavors
+        $price += 10;
+    } else if ($inputs[2] == "4") { // Mixed flavors
+        $price += 20;
+    }
+
 
     $response = "CON Confirm your order:\n";
-    $response .= "Uji: $teaType\n";
-    $response .= "Flavor: $flavorType\n";
-    $response .= "Quantity: $quantity\n";
-    $response .= "Building: $building, Office: $office\n";
+    $response .= "Uji: $flavorType\n";
+    $response .= "Sugar: $sugarType\n";
+    $response .= "Location: $location\n";
     $response .= "Delivery Time: $time\n";
-    $response .= "Total Price: $price Ksh\n";
+    $response .= "Amount: $price Ksh\n";
     $response .= "1. Pay\n";
     $response .= "2. Cancel/Change Order";
 
-    ;$stmt = $db->prepare("INSERT INTO orders (tea_type, flavor, quantity, building, office, delivery_time, phone_number, status) VALUES (?, ?, ?, ?, ?, ?, ?, 'pending')");
-    ;$stmt->execute([$teaType, $flavorType, $quantity, $building, $office, $time, $phoneNumber]);
+    ;$stmt = $db->prepare("INSERT INTO myorders (flavor_type, sugar_type, location_type, delivery_time, phone_number, status) VALUES (?, ?, ?, ?, ?, 'pending')");
+    ;$stmt->execute([$flavorType, $sugarType, $location, $time, $phoneNumber]);
 
-    $orderId = $db->lastInsertId();
+    $orderId = $db->lastInsertId();    
+    
 
-} else if ($inputs[0] == "1" && count($inputs) == 9 && $inputs[8] == "1") {
+} else if ($inputs[0] == "1" && count($inputs) == 6 && $inputs[5] == "1") {
     // Payment step
     
     $quantity = (int)$inputs[4];

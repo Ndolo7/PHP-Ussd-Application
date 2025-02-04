@@ -29,7 +29,6 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(data => {
                 if (data.success) {
                     // Successful dispatch
-                    orderCard.style.opacity = '0';
                     setTimeout(() => {
                         orderCard.remove();
                         
@@ -39,7 +38,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             const ordersGrid = document.querySelector('.orders-grid');
                             ordersGrid.innerHTML = '<div class="no-orders">No pending orders</div>';
                         }
-                    }, 300);
+                    }, 3000);
                 } else {
                     throw new Error('Dispatch failed');
                 }

@@ -23,7 +23,7 @@ $lastCheck = isset($_GET['lastCheck']) ? $_GET['lastCheck'] : 0;
 
 while (true) {
     // Check for new orders
-    $stmt = $db->prepare("SELECT * FROM orders WHERE status = 'pending' AND created_at > FROM_UNIXTIME(?)");
+    $stmt = $db->prepare("SELECT * FROM myorders WHERE status = 'pending' AND created_at > FROM_UNIXTIME(?)");
     $stmt->execute([$lastCheck]);
     $newOrders = $stmt->fetchAll(PDO::FETCH_ASSOC);
     

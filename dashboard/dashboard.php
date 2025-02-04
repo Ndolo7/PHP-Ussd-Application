@@ -23,12 +23,12 @@ function getDashboardStats() {
     $total_funds = $stmt->fetch(PDO::FETCH_ASSOC)['total'] ?? 0;
     
     // Get total sessions
-    $stmt = $db->query("SELECT COUNT(*) as total FROM orders");
+    $stmt = $db->query("SELECT COUNT(*) as total FROM myorders");
     $total_sessions = $stmt->fetch(PDO::FETCH_ASSOC)['total'] ?? 0;
     
     // Get best client
     $stmt = $db->query("SELECT phone_number, COUNT(*) as count 
-                       FROM orders 
+                       FROM myorders 
                        GROUP BY phone_number 
                        ORDER BY count DESC 
                        LIMIT 1");
@@ -55,14 +55,14 @@ $stats = getDashboardStats();
 // Function to get pending orders
 function getPendingOrders() {
     global $db;
-    $stmt = $db->query("SELECT * FROM orders WHERE status = 'pending' ORDER BY created_at DESC");
+    $stmt = $db->query("SELECT * FROM myorders WHERE status = 'pending' ORDER BY created_at DESC");
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
 // Handle order dispatch
 if (isset($_POST['dispatch_order'])) {
     $order_id = $_POST['order_id'];
-    $stmt = $db->prepare("UPDATE orders SET status = 'dispatched' WHERE order_id = ?");
+    $stmt = $db->prepare("UPDATE myorders SET status = 'dispatched' WHERE order_id = ?");
     $stmt->execute([$order_id]);
     
     // Return JSON response for AJAX request
@@ -146,29 +146,23 @@ $pending_orders = getPendingOrders();
                 <div class="order-details">
                     <div class="detail-row">
                         <span class="label">Uji Type:</span>
-                        <span class="value"><?= htmlspecialchars($order['tea_type']) ?></span>
+                        <span class="value"><?= htmlspecialchars($order['flavor_type']) ?></span>
                     </div>
-                    <?php if ($order['flavor']): ?>
+                    <?php if ($order['sugar_type']): ?>
                     <div class="detail-row">
-                        <span class="label">Flavor:</span>
-                        <span class="value"><?= htmlspecialchars($order['flavor']) ?></span>
+                        <span class="label">Sugar:</span>
+                        <span class="value"><?= htmlspecialchars($order['sugar_type']) ?></span>
                     </div>
                     <?php endif; ?>
-                    <div class="detail-row">
-                        <span class="label">Quantity:</span>
-                        <span class="value"><?= htmlspecialchars($order['quantity']) ?> cups</span>
-                    </div>
+
                     <div class="detail-row">
                         <span class="label">Location:</span>
-                        <span class="value"><?= htmlspecialchars($order['building']) ?></span>
+                        <span class="value"><?= htmlspecialchars($order['location_type']) ?></span>
                     </div>
-                    <div class="detail-row">
-                        <span class="label">Office:</span>
-                        <span class="value"><?= htmlspecialchars($order['office']) ?></span>
-                    </div>
+                
                     <div class="detail-row">
                         <span class="label">Delivery Time:</span>
-                        <span class="value"> <h2><?= htmlspecialchars($order['delivery_time']) ?></h2></span>
+                        <span class="value"> <h5><?= htmlspecialchars($order['delivery_time']) ?></h5></span>
                     </div>
                     <div class="detail-row">
                         <span class="label">Phone:</span>
