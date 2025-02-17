@@ -4,15 +4,7 @@ session_start();
 
 $authenticated = false;
 
-// Database connection (replace with your credentials)
-$servername = "localhost";
-$username = "root";
-$password = ""; 
-$dbname = "ussds";
-
-// Create connection
-// $conn = new mysqli($servername, $username, $password, $dbname);
-$db = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
+include "../functions/dbconnect.php";
 
 // Get dashboard statistics
 function getDashboardStats() {

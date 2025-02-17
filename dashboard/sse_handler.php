@@ -4,16 +4,7 @@ header('Cache-Control: no-cache');
 header('Connection: keep-alive');
 
 // Database connection
-try {
-    $servername = "localhost";
-    $username = "root";
-    $password = ""; 
-    $dbname = "ussds";
-    $db = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
-    $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-} catch(PDOException $e) {
-    exit();
-}
+include "../functions/dbconnect.php";
 
 // Send initial retry interval (5 seconds)
 echo "retry: 5000\n\n";

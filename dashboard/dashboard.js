@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             const ordersGrid = document.querySelector('.orders-grid');
                             ordersGrid.innerHTML = '<div class="no-orders">No pending orders</div>';
                         }
-                    }, 3000);
+                    }, 2000);
                 } else {
                     throw new Error('Dispatch failed');
                 }

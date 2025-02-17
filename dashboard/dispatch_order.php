@@ -1,17 +1,8 @@
 <?php
 header('Content-Type: application/json'); // Always return JSON
 
-
+include "../functions/dbconnect.php";
 try {
-    // Database connection
-    $servername = "localhost";
-    $username = "root";
-    $password = ""; 
-    $dbname = "ussds";
-    
-    $db = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
-    $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
     // Check if order_id is provided
     if (!isset($_POST['order_id'])) {
         throw new Exception('Order ID is required');
