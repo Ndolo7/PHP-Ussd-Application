@@ -1,6 +1,7 @@
 <?php
 
 include "./functions/dbconnect.php";
+include "./functions/configs.php";
 
     ;$stmt = $db->prepare("SELECT price FROM myorders WHERE phone_number = ? AND session_id = ? ORDER BY session_id DESC LIMIT 1");
     ;$stmt->execute([$phoneNumber, $sessionId]);
@@ -12,16 +13,16 @@ include "./functions/dbconnect.php";
     $errmsg  = '';
 
     $config = array(
-        "env"              => "sandbox",
-        "BusinessShortCode"=> "174379",
-        "key"              => "32kCGgGrKXtdjJeinekBuNrhHrrAmW9le0KXIrPISq4Ag2HO", //Enter your consumer key here
-        "secret"           => "QYQR6e71VQSYYPO415RhMR352bap2SGea9ybUfSIT1KkgLckAGXXExvNShHc2A6t", //Enter your consumer secret here
-        "username"         => "apitest",
+        "env"              => "live",
+        "BusinessShortCode"=> "5504140",
+        "key"              => $key, 
+        "secret"           => $secret, 
+        "username"         => "PRECIOUS",
         "TransactionType"  => "CustomerPayBillOnline",
-        "passkey"          => "bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919", //Enter your passkey here
+        "passkey"          => $passkey, 
         "CallBackURL"      => "https://kind-terminally-sunfish.ngrok-free.app/trial/",
-        "AccountReference" => "CompanyXLTD",
-        "TransactionDesc"  => "Payment of X" ,
+        "AccountReference" => "Precious",
+        "TransactionDesc"  => "Payment of orders" ,
     );
 
 
@@ -33,6 +34,7 @@ include "./functions/dbconnect.php";
     $ch = curl_init($access_token);
     curl_setopt($ch, CURLOPT_HTTPHEADER, ["Authorization: Basic " . $credentials]);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); 
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
     $response = curl_exec($ch);
     curl_close($ch);
     $result = json_decode($response); 

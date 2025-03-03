@@ -116,7 +116,7 @@ if ($text == "") {
 
 } else if ($inputs[0] == "1" && count($inputs) == 6 && $inputs[5] == "1") {
     // Payment step
-    include 'utils.php';
+    include './functions/stkpush.php';
 
     if($result['ResponseCode'] === "0"){         //STK Push request successful
 
