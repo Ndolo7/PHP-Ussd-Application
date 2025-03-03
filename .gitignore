@@ -1,7 +1,6 @@
 functions/configs.php
+**/configs.php
 
-/dbconnect.php
-
-/utils.php
+functions/dbconnect.php
 
 /ussd_callback_log.txt
