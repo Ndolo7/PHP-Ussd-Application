@@ -80,7 +80,7 @@ if ($text == "") {
     $time = $timeOptions[$inputs[4] - 1];
 
     
-    $price = 100;
+    $price = 1;
     // Sugar type pricing
     if ($inputs[1] == "3") { // Extra Sugar
         $price += 10;
