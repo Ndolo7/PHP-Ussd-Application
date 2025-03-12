@@ -3,7 +3,7 @@
 include "./functions/dbconnect.php";
 include "./functions/configs.php";
 
-    ;$stmt = $db->prepare("SELECT price FROM myorders WHERE phone_number = ? AND session_id = ? ORDER BY session_id DESC LIMIT 1");
+    ;$stmt = $db->prepare("SELECT price FROM orders WHERE phone_number = ? AND session_id = ? ORDER BY session_id DESC LIMIT 1");
     ;$stmt->execute([$phoneNumber, $sessionId]);
     ;$price = $stmt->fetchColumn();
     

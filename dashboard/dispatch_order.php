@@ -9,7 +9,7 @@ try {
     }
 
     // Update order status
-    $stmt = $db->prepare("UPDATE myorders SET status = 'dispatched' WHERE order_id = ?");
+    $stmt = $db->prepare("UPDATE orders SET status = 'dispatched' WHERE order_id = ?");
     $success = $stmt->execute([$_POST['order_id']]);
 
     if ($success && $stmt->rowCount() > 0) {
